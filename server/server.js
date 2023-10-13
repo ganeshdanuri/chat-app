@@ -185,6 +185,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   socket.on("join", (username) => {
+    console.log({ socket, username });
     activeUsers[username] = socket; // Associate username with socket
   });
 
