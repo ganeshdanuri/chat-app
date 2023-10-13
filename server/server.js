@@ -27,7 +27,7 @@ async function connectToDatabase() {
     await client.connect();
     console.log("Connected to MongoDB");
   } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
+    // console.error("Error connecting to MongoDB:", error);
   }
 }
 connectToDatabase();
@@ -89,9 +89,9 @@ app.post("/login", async (req, res) => {
       })
       .toArray((err, documents) => {
         if (err) {
-          console.error("Error retrieving data:", err);
+          // console.error("Error retrieving data:", err);
         } else {
-          console.log("Matching documents:", documents);
+          // console.log("Matching documents:", documents);
         }
       });
 
@@ -166,7 +166,6 @@ app.post("/sign-up", async (req, res) => {
       }
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "An error occurred" });
   }
 });
@@ -185,7 +184,6 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   socket.on("join", (username) => {
-    console.log({ socket, username });
     activeUsers[username] = socket; // Associate username with socket
   });
 
