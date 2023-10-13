@@ -10,8 +10,10 @@ export const App = () => {
   const userInfo = JSON.parse(serializedUserInfo);
 
   useEffect(() => {
-    socket.emit("join", userInfo.username);
-  }, []);
+    if (userInfo.username) {
+      socket.emit("join", userInfo?.username);
+    }
+  }, [userInfo]);
 
   return (
     <div className="flex flex-row w-full h-screen">
