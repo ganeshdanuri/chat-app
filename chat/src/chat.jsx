@@ -1,0 +1,206 @@
+import { useEffect, useState } from "react";
+import { Avatar, Button, Input } from "@nextui-org/react";
+import "./App.css";
+import { useQuery } from "react-query";
+import { useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { useDispatch, useSelector } from "react-redux";
+import { updateChatData, updateSelectedChatData } from "./store/counterSlice";
+
+const ChatHeader = () => {
+  return (
+    <div>
+      <div>{"Ganesh"}</div>
+      <hr />
+    </div>
+  );
+};
+
+const ChatArea = ({ chatContainerRef, userInfo }) => {
+  const selectedChat = useSelector((store) => store.chat.selectedChat);
+  const dispatch = useDispatch();
+
+  const scrollToBottom = () => {
+    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+  };
+
+  // Scroll to the bottom whenever the messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedChat?.chats]);
+
+  return (
+    <>
+      <div
+        key={uuidv4()}
+        ref={chatContainerRef}
+        id="chatContainer"
+        style={{
+          height: "90%",
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "auto",
+          scrollBehavior: "smooth",
+          background: "#e9ecef",
+        }}
+      >
+        {selectedChat?.chats?.length
+          ? selectedChat.chats.map((ch) => {
+              return (
+                <>
+                  <span
+                    key={uuidv4()}
+                    style={{
+                      alignSelf:
+                        ch?.sender === userInfo?.username ? "end" : "start",
+                      padding: "2px 10px",
+                      textAlign: "start",
+                      background:
+                        ch?.sender !== userInfo?.username
+                          ? "#DCE6FF"
+                          : "#3D64FD",
+                      color:
+                        ch?.sender !== userInfo?.username
+                          ? "#000000"
+                          : "#ffffff",
+                      maxWidth: "40%",
+                      padding: "10px",
+                      margin: "5px",
+                      borderRadius:
+                        ch.sender === userInfo?.username
+                          ? "10px 10px 0 10px"
+                          : "10px 10px 10px 0",
+                    }}
+                  >
+                    {ch.content}
+                  </span>
+                </>
+              );
+            })
+          : null}
+      </div>
+    </>
+  );
+};
+
+const Footer = ({ socket, userInfo }) => {
+  const dispatch = useDispatch();
+  const inputRef = useRef(null);
+  const buttonRef = useRef(null);
+  const [userInput, setUserInput] = useState("");
+  const selectedChat = useSelector((store) => store.chat.selectedChat);
+
+  const handleSend = () => {
+    if (userInput) {
+      const newMessage = {
+        sender: userInfo.username,
+        receiver: localStorage.getItem("receiver"),
+        content: userInput,
+      };
+      socket.emit("sendMessage", newMessage);
+      dispatch(updateChatData(newMessage));
+      dispatch(updateSelectedChatData(newMessage));
+      setUserInput("");
+    }
+  };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+
+    const handleKeyPress = (event) => {
+      if (event.key === "Enter") {
+        buttonRef.current.click();
+      }
+    };
+
+    inputRef.current.addEventListener("keypress", handleKeyPress);
+
+    return () => {
+      if (inputRef.current) {
+        inputRef.current.removeEventListener("keypress", handleKeyPress);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="flex" style={{ height: "7%", padding: "10px" }}>
+      <Input
+        ref={inputRef}
+        onChange={(e) => {
+          setUserInput(e.target.value);
+        }}
+        size="sm"
+        value={userInput}
+        placeholder="Type your message..."
+      />
+      <Button
+        size="sm"
+        color="primary"
+        variant="solid"
+        ref={buttonRef}
+        onClick={handleSend}
+      >
+        Send
+      </Button>
+    </div>
+  );
+};
+
+function Chat({ socket, userInfo }) {
+  const chatContainerRef = useRef(null);
+  const dispatch = useDispatch();
+  const selectedChat = useSelector((store) => store.chat.selectedChat);
+
+  // const { isLoading, error, data, isFetching } = useQuery("repoData", () =>
+  //   axios
+  //     .get("local")
+  //     .then((res) => res.data)
+  // );
+
+  const scrollToBottom = () => {
+    const chatContainer = document.getElementById("chatContainer");
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  };
+
+  console.log({ selectedChat });
+
+  useEffect(() => {
+    // Listen for incoming messages
+    if (socket) {
+      socket.on("connect", (message) => {
+        console.log("connected succesfully");
+      });
+
+      socket.on("receiveMessage", (data) => {
+        dispatch(updateSelectedChatData(data));
+        dispatch(updateChatData(data));
+      });
+    }
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", width: "85%" }}>
+      <ChatHeader />
+      <ChatArea
+        chatContainerRef={chatContainerRef}
+        scrollToBottom={scrollToBottom}
+        userInfo={userInfo}
+      />
+      <Footer
+        scrollToBottom={scrollToBottom}
+        socket={socket}
+        userInfo={userInfo}
+      />
+    </div>
+  );
+}
+
+export default Chat;
