@@ -1,4 +1,5 @@
 const BASE_URL = "https://chat-server-wdy1.onrender.com";
+export const SOCKET_URL = "https://chat-server-wdy1.onrender.com";
 
 export const allUrls = {
   LOGIN_URL: `${BASE_URL}/login`,

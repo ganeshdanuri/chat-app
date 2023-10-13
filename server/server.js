@@ -10,7 +10,6 @@ import jwt from "jsonwebtoken";
 const secretKey = "ganeshchat";
 
 // Mango db connection
-
 const password = encodeURIComponent("gKORA7AcdsJr9ldf");
 const uri = `mongodb+srv://danuriganesh:${password}@ganeshchat.y8wz5mr.mongodb.net/`;
 
@@ -35,12 +34,12 @@ connectToDatabase();
 
 // API Server
 const app = express();
-const api_port = 8001;
+const api_port = process.env.PORT || 8001;
 
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST"],
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -51,12 +50,9 @@ app.post("/search", async (req, res) => {
   if (searchTerm) {
     const database = client.db("ganeshchat");
     const collection = database.collection("users");
-
     const query = { username: { $regex: new RegExp(searchTerm, "i") } };
     const projection = { _id: 0, username: 1 };
-
     const searchResults = await collection.find(query, projection).toArray();
-
     const modified = searchResults.map((result) => {
       return { id: uuidv4(), username: result.username };
     });
@@ -69,15 +65,13 @@ app.post("/addFriends", async (req, res) => {
   if (from && to) {
     const database = client.db("ganeshchat");
     const collection = database.collection("users");
-
     const addFriends = await collection.updateOne(
-      { username: from }, // Assuming you're using "_id" as the user identifier
+      { username: from },
       { $addToSet: { friends: to } }
     );
 
     res.send(addFriends.acknowledged);
   } else {
-    // res.send()
   }
 });
 
@@ -86,14 +80,9 @@ app.post("/login", async (req, res) => {
   if (username && password) {
     const database = client.db("ganeshchat");
     const collection = database.collection("users");
-
     const hostoryCollection = database.collection("chatHistory");
-
     const query = { username };
-    const projection = { _id: 1, username: 1, password: 1 }; // Only retrieve username and password
-
     const user = await collection.findOne(query);
-
     const chatData = await hostoryCollection
       .find({
         $or: [{ sender: username }, { receiver: username }],
@@ -111,13 +100,10 @@ app.post("/login", async (req, res) => {
     let updatedChats = [];
 
     if (friends?.length && chatData?.length) {
-      console.log(true);
       updatedChats = friends.map((username) => {
         const filteredResults = chatData.filter(
           (chat) => chat.receiver === username || chat.sender === username
         );
-
-        console.log({ filteredResults });
         return { name: username, chats: filteredResults };
       });
     }
@@ -186,9 +172,8 @@ app.post("/sign-up", async (req, res) => {
 });
 
 // Socket Connection
-
 const server = http.createServer(app);
-const socket_port = 8000;
+const socket_port = process.env.PORT || 8000;
 const activeUsers = {};
 
 const io = new Server(server, {
@@ -199,8 +184,6 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("A new client connected");
-
   socket.on("join", (username) => {
     activeUsers[username] = socket; // Associate username with socket
   });
@@ -216,15 +199,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMessage", async (data) => {
-    const { sender, receiver, content } = data;
+    const { receiver } = data;
     const recipientSocket = activeUsers[receiver];
     try {
       const database = client.db("ganeshchat");
       const collection = database.collection("chatHistory");
-
-      // check if username alreday exits
-
-      const result = await collection.insertOne(data);
+      await collection.insertOne(data);
     } catch {}
     if (recipientSocket) {
       recipientSocket.emit("receiveMessage", data);
@@ -232,7 +212,7 @@ io.on("connection", (socket) => {
   });
 });
 
-app.listen(process.env.PORT || api_port, () => {
+app.listen(api_port, () => {
   console.log(`API Server is runiing on ${api_port}`);
 });
 
