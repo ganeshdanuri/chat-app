@@ -6,6 +6,7 @@ import { SOCKET_URL } from "./components/common/API/urls";
 
 export const App = () => {
   const socket = io(SOCKET_URL);
+  console.log({ socket });
   let serializedUserInfo = localStorage.getItem("userInfo");
   const userInfo = JSON.parse(serializedUserInfo);
 

@@ -34,7 +34,7 @@ connectToDatabase();
 
 // API Server
 const app = express();
-const api_port = process.env.PORT || 8001;
+const api_port = process.env.API_PORT || 8001;
 
 const corsOptions = {
   origin: "*",
@@ -173,7 +173,7 @@ app.post("/sign-up", async (req, res) => {
 
 // Socket Connection
 const server = http.createServer(app);
-const socket_port = process.env.PORT || 8000;
+const socket_port = process.env.SOCKET_PORT || 8000;
 const activeUsers = {};
 
 const io = new Server(server, {
