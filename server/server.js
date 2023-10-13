@@ -1,9 +1,7 @@
 import cors from "cors";
 import express from "express";
-import { generate, count } from "random-words";
 import http from "http";
 import { Server } from "socket.io";
-import { mongoose } from "mongoose";
 import bodyParser from "body-parser";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { v4 as uuidv4 } from "uuid";
