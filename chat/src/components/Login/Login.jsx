@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Tabs,
   Tab,
@@ -7,7 +7,7 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
+  Progress,
 } from "@nextui-org/react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,9 +16,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setChatData } from "../../store/counterSlice";
+import { Image } from "@nextui-org/react";
+import "./index.css";
 
 export default function LoginNew() {
   const [selected, setSelected] = React.useState("login");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -27,6 +30,7 @@ export default function LoginNew() {
   }, [selected]);
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     const formData = new FormData(e.target);
 
@@ -71,11 +75,14 @@ export default function LoginNew() {
         navigate("/", { replace: true });
       }, 1000);
     }
+    setLoading(false);
   };
 
   return (
-    <div className="flex flex-col w-full items-center justify-center h-screen">
-      <Card className="max-w-full w-[340px] h-[400px]">
+    <div className="login-container">
+      <div className="chat-image-container"></div>
+      <Card className="card-container">
+        <div style={{ marginBottom: "30%" }}></div>
         <CardBody className="overflow-hidden">
           <Tabs
             fullWidth
@@ -110,10 +117,28 @@ export default function LoginNew() {
                   </Link>
                 </p>
                 <div className="flex gap-2 justify-end">
-                  <Button fullWidth color="primary" type="submit">
+                  <Button
+                    fullWidth
+                    color="primary"
+                    type="submit"
+                    isDisabled={loading}
+                  >
                     Login
                   </Button>
                 </div>
+                {loading && (
+                  <>
+                    <Progress
+                      size="sm"
+                      isIndeterminate
+                      aria-label="Loading..."
+                      className="max-w-md"
+                    />
+                    <div className="items-center">
+                      Logging you in, please wait...
+                    </div>
+                  </>
+                )}
               </form>
             </Tab>
             <Tab key="sign-up" title="Sign up">
@@ -149,10 +174,28 @@ export default function LoginNew() {
                   </Link>
                 </p>
                 <div className="flex gap-2 justify-end">
-                  <Button fullWidth color="primary" type="submit">
+                  <Button
+                    fullWidth
+                    color="primary"
+                    type="submit"
+                    isDisabled={loading}
+                  >
                     Sign up
                   </Button>
                 </div>
+                {loading && (
+                  <>
+                    <Progress
+                      size="sm"
+                      isIndeterminate
+                      aria-label="Loading..."
+                      className="max-w-md"
+                    />
+                    <div className="items-center">
+                      We are creating your account, please wait...
+                    </div>
+                  </>
+                )}
               </form>
             </Tab>
           </Tabs>

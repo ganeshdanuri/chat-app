@@ -1,16 +1,16 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { Avatar, Button, Input } from "@nextui-org/react";
 import "./App.css";
-import { useQuery } from "react-query";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { updateChatData, updateSelectedChatData } from "./store/counterSlice";
 
-const ChatHeader = () => {
+const ChatHeader = ({ selectedChat }) => {
   return (
     <div>
-      <div>{"Ganesh"}</div>
+      <div>{selectedChat?.name.toUpperCase()}</div>
       <hr />
     </div>
   );
@@ -40,45 +40,44 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
           padding: "20px",
           display: "flex",
           flexDirection: "column",
-          overflow: "auto",
+          overflow: selectedChat ? "auto" : "hidden",
           scrollBehavior: "smooth",
           background: "#e9ecef",
         }}
       >
-        {selectedChat?.chats?.length
-          ? selectedChat.chats.map((ch) => {
-              return (
-                <>
-                  <span
-                    key={uuidv4()}
-                    style={{
-                      alignSelf:
-                        ch?.sender === userInfo?.username ? "end" : "start",
-                      padding: "2px 10px",
-                      textAlign: "start",
-                      background:
-                        ch?.sender !== userInfo?.username
-                          ? "#DCE6FF"
-                          : "#3D64FD",
-                      color:
-                        ch?.sender !== userInfo?.username
-                          ? "#000000"
-                          : "#ffffff",
-                      maxWidth: "40%",
-                      padding: "10px",
-                      margin: "5px",
-                      borderRadius:
-                        ch.sender === userInfo?.username
-                          ? "10px 10px 0 10px"
-                          : "10px 10px 10px 0",
-                    }}
-                  >
-                    {ch.content}
-                  </span>
-                </>
-              );
-            })
-          : null}
+        {selectedChat ? (
+          selectedChat?.chats?.length &&
+          selectedChat.chats.map((ch) => {
+            return (
+              <>
+                <span
+                  key={uuidv4()}
+                  style={{
+                    alignSelf:
+                      ch?.sender === userInfo?.username ? "end" : "start",
+                    padding: "2px 10px",
+                    textAlign: "start",
+                    background:
+                      ch?.sender !== userInfo?.username ? "#DCE6FF" : "#3D64FD",
+                    color:
+                      ch?.sender !== userInfo?.username ? "#000000" : "#ffffff",
+                    maxWidth: "40%",
+                    padding: "10px",
+                    margin: "5px",
+                    borderRadius:
+                      ch.sender === userInfo?.username
+                        ? "10px 10px 0 10px"
+                        : "10px 10px 10px 0",
+                  }}
+                >
+                  {ch.content}
+                </span>
+              </>
+            );
+          })
+        ) : (
+          <img src="./images/chat.svg" />
+        )}
       </div>
     </>
   );
@@ -105,46 +104,51 @@ const Footer = ({ socket, userInfo }) => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      buttonRef.current?.click();
+    }
+  };
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
+      inputRef.current?.addEventListener("keypress", handleKeyPress);
     }
 
-    const handleKeyPress = (event) => {
-      if (event.key === "Enter") {
-        buttonRef.current.click();
-      }
-    };
-
-    inputRef.current.addEventListener("keypress", handleKeyPress);
-
     return () => {
-      if (inputRef.current) {
-        inputRef.current.removeEventListener("keypress", handleKeyPress);
+      if (inputRef?.current) {
+        inputRef.current?.removeEventListener("keypress", handleKeyPress);
       }
     };
   }, []);
 
   return (
     <div className="flex" style={{ height: "7%", padding: "10px" }}>
-      <Input
-        ref={inputRef}
-        onChange={(e) => {
-          setUserInput(e.target.value);
-        }}
-        size="sm"
-        value={userInput}
-        placeholder="Type your message..."
-      />
-      <Button
-        size="sm"
-        color="primary"
-        variant="solid"
-        ref={buttonRef}
-        onClick={handleSend}
-      >
-        Send
-      </Button>
+      {selectedChat ? (
+        <>
+          <Input
+            ref={inputRef}
+            onChange={(e) => {
+              setUserInput(e.target.value);
+            }}
+            size="sm"
+            value={userInput}
+            placeholder="Type your message..."
+          />
+          <Button
+            size="sm"
+            color="primary"
+            variant="solid"
+            ref={buttonRef}
+            onClick={handleSend}
+          >
+            Send
+          </Button>
+        </>
+      ) : (
+        <div>Please select the chat</div>
+      )}
     </div>
   );
 };
@@ -171,7 +175,7 @@ function Chat({ socket, userInfo }) {
     // Listen for incoming messages
     if (socket) {
       socket.on("connect", (message) => {
-        console.log("connected succesfully");
+        console.log(message);
       });
 
       socket.on("receiveMessage", (data) => {
@@ -188,7 +192,7 @@ function Chat({ socket, userInfo }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "85%" }}>
-      <ChatHeader />
+      <ChatHeader selectedChat={selectedChat} />
       <ChatArea
         chatContainerRef={chatContainerRef}
         scrollToBottom={scrollToBottom}
