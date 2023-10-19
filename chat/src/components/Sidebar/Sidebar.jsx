@@ -15,10 +15,12 @@ import { FcSearch } from "react-icons/fc";
 import { allUrls } from "../common/API/urls";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChat } from "../../store/counterSlice";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 export const NewSidebar = ({ userInfo }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [seachResults, setSearchResults] = useState([]);
   const [updatedFriends, setUpdatedFriends] = useState();
@@ -146,7 +148,13 @@ export const NewSidebar = ({ userInfo }) => {
             name={userInfo?.username}
           />
         </DropdownTrigger>
-        <DropdownMenu aria-label="User Actions" variant="flat">
+        <DropdownMenu
+          aria-label="User Actions"
+          variant="flat"
+          onAction={(key) => {
+            if (key === "logout") navigate("/login");
+          }}
+        >
           <DropdownItem key="logout" color="danger">
             Log Out
           </DropdownItem>
