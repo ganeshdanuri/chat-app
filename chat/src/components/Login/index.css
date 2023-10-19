@@ -6,10 +6,10 @@
 
 .chat-image-container {
   width: 75%;
-  background-image: url("./images/message.svg");
-  /* background-size: cover; */
+  background-image: url("../../assets/message.svg");
   background-repeat: no-repeat;
 }
+
 .card-container {
   height: 100%;
   flex-grow: 1;

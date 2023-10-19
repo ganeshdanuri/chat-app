@@ -9,7 +9,7 @@ const ProtectedRoute = (props) => {
     if (!jwtToken || jwtToken === "null") {
       navigate("/login", { replace: true });
     }
-  }, [jwtToken]);
+  }, []);
 
   return <>{props.component}</>;
 };

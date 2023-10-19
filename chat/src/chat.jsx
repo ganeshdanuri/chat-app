@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Avatar, Button, Input } from "@nextui-org/react";
-import "./App.css";
+import { Button, Input } from "@nextui-org/react";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { updateChatData, updateSelectedChatData } from "./store/counterSlice";
+import { io } from "socket.io-client";
+import { SOCKET_URL } from "./components/common/API/urls";
+import "./App.css";
 
 const ChatHeader = ({ selectedChat }) => {
   return (
@@ -62,7 +64,6 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
                     color:
                       ch?.sender !== userInfo?.username ? "#000000" : "#ffffff",
                     maxWidth: "40%",
-                    padding: "10px",
                     margin: "5px",
                     borderRadius:
                       ch.sender === userInfo?.username
@@ -153,10 +154,11 @@ const Footer = ({ socket, userInfo }) => {
   );
 };
 
-function Chat({ socket, userInfo }) {
+function Chat({ userInfo }) {
   const chatContainerRef = useRef(null);
   const dispatch = useDispatch();
   const selectedChat = useSelector((store) => store.chat.selectedChat);
+  const socket = io(SOCKET_URL, { transports: ["websocket"] });
 
   // const { isLoading, error, data, isFetching } = useQuery("repoData", () =>
   //   axios
@@ -169,7 +171,11 @@ function Chat({ socket, userInfo }) {
     chatContainer.scrollTop = chatContainer.scrollHeight;
   };
 
-  console.log({ selectedChat });
+  useEffect(() => {
+    if (userInfo.username) {
+      socket.emit("join", userInfo?.username);
+    }
+  }, [userInfo?.username]);
 
   useEffect(() => {
     // Listen for incoming messages

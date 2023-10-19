@@ -16,7 +16,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setChatData } from "../../store/counterSlice";
-import { Image } from "@nextui-org/react";
+
 import "./index.css";
 
 export default function LoginNew() {
