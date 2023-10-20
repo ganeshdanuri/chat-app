@@ -11,6 +11,7 @@
 
 .card-container {
   height: 100%;
+  width: 25%;
 }
 
 @media screen and (max-width: 600px) {
@@ -21,5 +22,15 @@
   .card-container {
     flex-grow: 1;
     width: 100% !important;
+  }
+
+  .card-boby {
+    background-color: red !important;
+  }
+
+  .card-container {
+    background-image: url("../../assets/text.svg") !important;
+    background-position: bottom;
+    background-repeat: no-repeat;
   }
 }

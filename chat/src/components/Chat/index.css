@@ -7,6 +7,12 @@
   scroll-behavior: smooth;
 }
 
+.input-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
 @media screen and (max-width: 600px) {
   .chat-container {
     height: 90% !important;
@@ -28,4 +34,12 @@
   .mobile-footer-container {
     display: none !important;
   }
+}
+
+.chat-header-container {
+  height: 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
 }

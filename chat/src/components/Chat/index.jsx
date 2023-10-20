@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Button, Input, Kbd } from "@nextui-org/react";
+import { Avatar, Button, Input, Kbd, Spacer } from "@nextui-org/react";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,12 +14,18 @@ import "./index.css";
 import { ChatIcon } from "../../assets/SVGIcons/ChatsIcon";
 import { IconWrapper } from "../../assets/SVGIcons/IconWrapper";
 import { UsersIcon } from "../../assets/SVGIcons/UsersIcon";
+import SendIcon from "../../assets/SVGIcons/SendIcon";
+import SearchIcon from "../../assets/SVGIcons/SearchIcon";
+import ClearChat from "../../assets/SVGIcons/ClearIcon";
 
-const ChatHeader = ({ selectedChat }) => {
+const ChatHeader = () => {
   return (
-    <div>
-      <div>{selectedChat?.name.toUpperCase()}</div>
-      <hr />
+    <div className="items-center">
+      <div style={{ width: "50%" }}>Hello</div>
+      <div style={{ width: "50%" }} className="flex">
+        <SearchIcon />
+        <ClearChat />
+      </div>
     </div>
   );
 };
@@ -50,10 +56,25 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
         }
       >
         {selectedChat ? (
-          selectedChat?.chats?.length &&
+          selectedChat?.chats?.length > 0 &&
           selectedChat.chats.map((ch) => {
             return (
-              <>
+              <div
+                key={uuidv4()}
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    ch?.sender !== userInfo?.username ? "start" : "end",
+                  alignItems: "start",
+                }}
+              >
+                {/* <Avatar
+                  size="sm"
+                  isDisabled
+                  name="Joe"
+                  isBordered
+                  style={{ order: ch?.sender === userInfo?.username && 1 }}
+                /> */}
                 <span
                   key={uuidv4()}
                   style={{
@@ -73,9 +94,9 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
                         : "10px 10px 10px 0",
                   }}
                 >
-                  {ch.content}
+                  <span>{ch.content}</span>
                 </span>
-              </>
+              </div>
             );
           })
         ) : (
@@ -103,8 +124,6 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
 
 const Footer = ({ socket, userInfo }) => {
   const dispatch = useDispatch();
-  const inputRef = useRef(null);
-  const buttonRef = useRef(null);
   const [userInput, setUserInput] = useState("");
   const selectedChat = useSelector((store) => store.chat.selectedChat);
 
@@ -122,49 +141,37 @@ const Footer = ({ socket, userInfo }) => {
     }
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
-      buttonRef.current?.click();
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSend();
     }
   };
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current?.addEventListener("keypress", handleKeyPress);
-    }
-
-    return () => {
-      if (inputRef?.current) {
-        inputRef.current?.removeEventListener("keypress", handleKeyPress);
-      }
-    };
-  }, []);
 
   return (
     <>
       {selectedChat && (
         <div
           className="flex input-container"
-          style={{ height: "7%", padding: "10px" }}
+          style={{ height: "8%", padding: "10px" }}
         >
           <Input
-            ref={inputRef}
             onChange={(e) => {
               setUserInput(e.target.value);
             }}
-            size="sm"
+            size="lg"
             value={userInput}
             placeholder="Type your message..."
+            onKeyDown={handleKeyDown}
           />
+
           <Button
-            size="sm"
-            color="primary"
-            variant="solid"
-            ref={buttonRef}
+            isIconOnly
+            aria-label="Take a photo"
+            size="lg"
+            variant="def"
             onClick={handleSend}
           >
-            Send
+            <SendIcon />
           </Button>
         </div>
       )}
@@ -216,7 +223,7 @@ function Chat({ userInfo }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-      <ChatHeader selectedChat={selectedChat} />
+      <ChatHeader />
       <ChatArea
         chatContainerRef={chatContainerRef}
         scrollToBottom={scrollToBottom}
