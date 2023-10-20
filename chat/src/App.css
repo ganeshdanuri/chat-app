@@ -25,3 +25,7 @@ input:focus {
   border: 1px solid transparent;
   outline: none;
 }
+
+.app-container {
+  height: 100dvh;
+}
