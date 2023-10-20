@@ -1,13 +1,19 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input, Kbd } from "@nextui-org/react";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
-import { updateChatData, updateSelectedChatData } from "./store/counterSlice";
+import {
+  updateChatData,
+  updateSelectedChatData,
+} from "../../store/counterSlice";
 import { io } from "socket.io-client";
-import { SOCKET_URL } from "./components/common/API/urls";
-import "./App.css";
+import { SOCKET_URL } from "../common/API/urls";
+import "./index.css";
+import { ChatIcon } from "../../assets/SVGIcons/ChatsIcon";
+import { IconWrapper } from "../../assets/SVGIcons/IconWrapper";
+import { UsersIcon } from "../../assets/SVGIcons/UsersIcon";
 
 const ChatHeader = ({ selectedChat }) => {
   return (
@@ -20,7 +26,6 @@ const ChatHeader = ({ selectedChat }) => {
 
 const ChatArea = ({ chatContainerRef, userInfo }) => {
   const selectedChat = useSelector((store) => store.chat.selectedChat);
-  const dispatch = useDispatch();
 
   const scrollToBottom = () => {
     chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -38,14 +43,11 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
         ref={chatContainerRef}
         id="chatContainer"
         style={{
-          height: "90%",
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
           overflow: selectedChat ? "auto" : "hidden",
-          scrollBehavior: "smooth",
-          background: "#e9ecef",
         }}
+        className={
+          !selectedChat ? "chat-container items-center" : "chat-container"
+        }
       >
         {selectedChat ? (
           selectedChat?.chats?.length &&
@@ -77,8 +79,23 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
             );
           })
         ) : (
-          <img src="./images/chat.svg" />
+          <>
+            <img src="./images/chat.svg" />
+            <div className="flex gap-4">
+              <Kbd>Connect</Kbd>
+              <Kbd>Chat</Kbd>
+              <Kbd>Repeat</Kbd>
+            </div>
+          </>
         )}
+      </div>
+      <div className="mobile-footer-container">
+        <IconWrapper className="bg-secondary/10 text-secondary">
+          <ChatIcon className="text-lg " />
+        </IconWrapper>
+        <IconWrapper className="bg-warning/10 text-warning">
+          <UsersIcon />
+        </IconWrapper>
       </div>
     </>
   );
@@ -125,9 +142,12 @@ const Footer = ({ socket, userInfo }) => {
   }, []);
 
   return (
-    <div className="flex" style={{ height: "7%", padding: "10px" }}>
-      {selectedChat ? (
-        <>
+    <>
+      {selectedChat && (
+        <div
+          className="flex input-container"
+          style={{ height: "7%", padding: "10px" }}
+        >
           <Input
             ref={inputRef}
             onChange={(e) => {
@@ -146,11 +166,9 @@ const Footer = ({ socket, userInfo }) => {
           >
             Send
           </Button>
-        </>
-      ) : (
-        <div>Please select the chat</div>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
@@ -197,7 +215,7 @@ function Chat({ userInfo }) {
   }, []);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "85%" }}>
+    <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
       <ChatHeader selectedChat={selectedChat} />
       <ChatArea
         chatContainerRef={chatContainerRef}

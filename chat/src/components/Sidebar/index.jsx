@@ -17,12 +17,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChat } from "../../store/counterSlice";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import "./index.css";
 
-export const NewSidebar = ({ userInfo }) => {
+const Sidebar = ({ userInfo }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [seachResults, setSearchResults] = useState([]);
+  const [selectedUsername, setSelectedUsername] = useState("");
   const [updatedFriends, setUpdatedFriends] = useState();
 
   const debouncedInputValue = useDebounce(inputValue, 1000);
@@ -68,16 +70,15 @@ export const NewSidebar = ({ userInfo }) => {
         dispatch(setSelectedChat({ name: username, chats: [] }));
       }
     }
+    setSelectedUsername(username);
     localStorage.setItem("receiver", username);
   };
 
   return (
     <div
+      className="sidebar-container"
       style={{
         width: "20%",
-        height: "100%",
-        padding: "10px",
-        backgroundColor: "#F8F9FD",
       }}
     >
       <Input
@@ -90,14 +91,17 @@ export const NewSidebar = ({ userInfo }) => {
       <Spacer y={4} />
 
       {friends?.length && (
-        <div className="w-full flex flex-col gap-4 items-center">
+        <div className="friends-container">
           {friends.map((friend) => {
             return (
               <div
-                className="w-full flex justify-start items-center cursor-pointer"
-                style={{ padding: "10px" }}
+                className="cursor-pointer friends-item"
                 onClick={() => onChatClick(friend)}
                 key={uuidv4()}
+                style={{
+                  backgroundColor:
+                    selectedUsername === friend ? "#f1f4f6" : "transparent",
+                }}
               >
                 <div>
                   <Avatar
@@ -163,3 +167,5 @@ export const NewSidebar = ({ userInfo }) => {
     </div>
   );
 };
+
+export default Sidebar;

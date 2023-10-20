@@ -6,11 +6,20 @@
 
 .chat-image-container {
   width: 75%;
-  background-image: url("../../assets/message.svg");
   background-repeat: no-repeat;
 }
 
 .card-container {
   height: 100%;
-  flex-grow: 1;
+}
+
+@media screen and (max-width: 600px) {
+  .chat-image-container {
+    display: none !important;
+  }
+
+  .card-container {
+    flex-grow: 1;
+    width: 100% !important;
+  }
 }

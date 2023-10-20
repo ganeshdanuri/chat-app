@@ -17,7 +17,8 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setChatData } from "../../store/counterSlice";
 
-import "./index.css";
+import "./Login.css";
+import { MessageIcon } from "../../assets/SVGIcons/Message";
 
 export default function LoginNew() {
   const [selected, setSelected] = React.useState("login");
@@ -36,7 +37,6 @@ export default function LoginNew() {
 
     const username = formData.get("username");
     const password = formData.get("password");
-    const displayName = formData.get("displayName");
 
     if (!username || !password) return;
 
@@ -80,13 +80,12 @@ export default function LoginNew() {
 
   return (
     <div className="login-container">
-      <div className="chat-image-container"></div>
       <Card className="card-container">
         <div style={{ marginBottom: "30%" }}></div>
         <CardBody className="overflow-hidden">
           <Tabs
             fullWidth
-            size="md"
+            size="lg"
             aria-label="Tabs form"
             selectedKey={selected}
             onSelectionChange={(e) => setSelected(e)}
@@ -201,6 +200,9 @@ export default function LoginNew() {
           </Tabs>
         </CardBody>
       </Card>
+      <div className="chat-image-container items-center">
+        <MessageIcon />
+      </div>
     </div>
   );
 }

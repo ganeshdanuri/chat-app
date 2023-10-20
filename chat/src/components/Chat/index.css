@@ -1,0 +1,31 @@
+.chat-container {
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: #e9ecef;
+  scroll-behavior: smooth;
+}
+
+@media screen and (max-width: 600px) {
+  .chat-container {
+    height: 90% !important;
+  }
+
+  .input-container {
+    display: none !important;
+  }
+}
+
+.mobile-footer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+@media screen and (min-width: 600px) {
+  .mobile-footer-container {
+    display: none !important;
+  }
+}
