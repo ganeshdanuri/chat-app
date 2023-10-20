@@ -27,5 +27,6 @@ input:focus {
 }
 
 .app-container {
-  height: 100dvh !important;
+  height: 100vh;
+  height: 100svh;
 }
