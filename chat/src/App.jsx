@@ -7,7 +7,7 @@ export const App = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   return (
-    <div className="flex flex-row w-full h-screen app-container">
+    <div className="flex flex-row w-full app-container">
       <Sidebar userInfo={userInfo} />
       <Chat userInfo={userInfo} />
     </div>
