@@ -7,30 +7,29 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Button,
 } from "@nextui-org/react";
-import axios from "axios";
 import { useEffect, useState } from "react";
-import useDebounce from "../../utilities/Hooks/useDebounce";
-import { FcSearch } from "react-icons/fc";
 import { allUrls } from "../common/API/urls";
 import { useDispatch, useSelector } from "react-redux";
+import { FriendIcon } from "../../assets/SVGIcons/FriendIcon";
 import { setSelectedChat } from "../../store/counterSlice";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 import StarIcon from "../../assets/SVGIcons/StarIcon";
-import "./index.css";
 import SearchIcon from "../../assets/SVGIcons/SearchIcon";
+import ChatModal from "../common/Components/Modal";
+
+import "./index.css";
 
 const Sidebar = ({ userInfo }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [inputValue, setInputValue] = useState("");
-  const [seachResults, setSearchResults] = useState([]);
   const [selectedUsername, setSelectedUsername] = useState("");
   const [updatedFriends, setUpdatedFriends] = useState();
-
-  const debouncedInputValue = useDebounce(inputValue, 1000);
   const chatData = useSelector((store) => store.chat.chatData);
+  const [openModal, setOpenModal] = useState(false);
 
   const { friends } = userInfo || {};
 
@@ -39,24 +38,6 @@ const Sidebar = ({ userInfo }) => {
       setUpdatedFriends(friends);
     }
   }, [friends]);
-
-  useEffect(() => {
-    triggerSearch(debouncedInputValue);
-  }, [debouncedInputValue]);
-
-  const triggerSearch = async (searchTerm) => {
-    if (!searchTerm) {
-      setSearchResults([]);
-      return;
-    }
-
-    const response = await axios.post(allUrls.SEARCH_USERS_URL, {
-      searchTerm,
-    });
-    if (response.data) {
-      setSearchResults(response.data);
-    }
-  };
 
   const onChatClick = async (username) => {
     if (!updatedFriends?.includes(username)) {
@@ -87,15 +68,25 @@ const Sidebar = ({ userInfo }) => {
         width: "20%",
       }}
     >
-      <Input
-        onChange={(e) => setInputValue(e.target.value)}
-        placeholder="Search or start a new chat"
-        startContent={<SearchIcon />}
-      />
-      <Spacer y={4} />
+      <div className="flex items-center">
+        <Input
+          placeholder="Search or start a new chat"
+          isClearable
+          onValueChange={(value) => console.log(value)}
+          startContent={<SearchIcon />}
+        />
+        <Spacer y={4} />
+        <Button
+          isIconOnly
+          style={{ backgroundColor: "f1f4f6" }}
+          onClick={() => setOpenModal(true)}
+        >
+          <FriendIcon className="cursor-pointer" />
+        </Button>
+      </div>
 
       <div style={{ height: "86%", overflowY: "auto", overflowX: "hidden" }}>
-        {friends?.length > 0 && (
+        {updatedFriends?.length > 0 && (
           <div className="friends-container">
             {friends.map((friend) => {
               return (
@@ -129,44 +120,6 @@ const Sidebar = ({ userInfo }) => {
             })}
           </div>
         )}
-        {seachResults?.length > 0 ? (
-          <div className="friends-container">
-            {seachResults
-              .filter(({ username }) => username !== userInfo.username)
-              .map(({ username }) => {
-                return (
-                  <div
-                    onClick={() => onChatClick(username)}
-                    key={uuidv4()}
-                    className={
-                      selectedUsername === username
-                        ? "selected-friend cursor-pointer friends-item"
-                        : "cursor-pointer friends-item"
-                    }
-                  >
-                    <div>
-                      <Avatar
-                        name={username[0].toUpperCase()}
-                        size="sm"
-                        radius="sm"
-                        className={
-                          selectedUsername === username
-                            ? "friend-avtar selected-avtar"
-                            : "friend-avtar"
-                        }
-                      />
-                    </div>
-                    <Spacer x={4} />
-                    <span>{username}</span>
-                    <Spacer x={4} />
-                    <StarIcon selected={selectedUsername === username} />
-                  </div>
-                );
-              })}
-          </div>
-        ) : (
-          inputValue && <div> No Results found !! </div>
-        )}
       </div>
       <hr />
       <div className="items-center" style={{ padding: "10px" }}>
@@ -192,6 +145,12 @@ const Sidebar = ({ userInfo }) => {
           </DropdownMenu>
         </Dropdown>
       </div>
+      <ChatModal
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        selectedUsername={selectedUsername}
+        userInfo={userInfo}
+      />
     </div>
   );
 };
