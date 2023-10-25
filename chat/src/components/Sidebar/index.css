@@ -26,15 +26,14 @@
   }
 
   .selected-friend {
-    background-color: #3d64fd;
+    background-color: #6563ff;
     color: #f8f9fd;
-    box-shadow: rgba(240, 46, 170, 0.4) 5px 5px,
-      rgba(240, 46, 170, 0.3) 10px 10px;
+    box-shadow: #b2b1ff 3px 3px;
   }
 
   .friend-avtar {
     color: #f8f9fd;
-    background-color: #3d64fd;
+    background-color: #6563ff;
     font-size: 16px;
     font-weight: bold;
   }
@@ -46,7 +45,7 @@
   }
 
   .friends-item:hover {
-    background-color: #3d64fd;
+    background-color: #6563ff;
     color: #f8f9fd;
   }
 }

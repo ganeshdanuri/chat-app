@@ -4,6 +4,13 @@
   align-items: center;
   padding: 10px;
   background-color: #e9ecef;
+
+  .buttons-container {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .chat-container {

@@ -150,7 +150,6 @@ export default function LoginNew() {
                   name="displayName"
                   label="Name"
                   placeholder="Enter your name"
-                  type="password"
                 />
                 <Input
                   isRequired

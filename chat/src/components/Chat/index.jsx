@@ -1,6 +1,17 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Button, Input, Kbd } from "@nextui-org/react";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+  Kbd,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@nextui-org/react";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,20 +27,82 @@ import { UsersIcon } from "../../assets/SVGIcons/UsersIcon";
 import SendIcon from "../../assets/SVGIcons/SendIcon";
 import SearchIcon from "../../assets/SVGIcons/SearchIcon";
 import "./index.css";
+import StarIcon from "../../assets/SVGIcons/StarIcon";
+import MenuIcon from "../../assets/SVGIcons/MenuIcon";
+import {
+  ClearIcon,
+  DeleteDocumentIcon,
+} from "../../assets/SVGIcons/DeleteIcon";
 
 const ChatHeader = () => {
   const selectedChat = useSelector((store) => store.chat.selectedChat);
+  const iconClasses =
+    "text-xl text-default-500 pointer-events-none flex-shrink-0";
   return selectedChat ? (
     <div className="chat-header">
-      <div>
+      <div className="buttons-container">
+        {/* <Popover placement="left" >
+          <PopoverTrigger>
+            <Button
+              isIconOnly
+              // color="warning"
+              // variant="faded"
+              aria-label="Take a photo"
+              style={{ backgroundColor: "#ffffff" }}
+            >
+              <SearchIcon />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Input size="md" isClearable placeholder="Search..." />
+          </PopoverContent>
+        </Popover> */}
+
         <Button
           isIconOnly
-          color="warning"
-          variant="faded"
+          // color="warning"
+          // variant="faded"
           aria-label="Take a photo"
+          style={{ backgroundColor: "#ffffff" }}
         >
-          <SearchIcon />
+          <StarIcon />
         </Button>
+
+        <Dropdown>
+          <DropdownTrigger>
+            <Button
+              isIconOnly
+              // color="warning"
+              // variant="faded"
+              aria-label="Take a photo"
+              style={{ backgroundColor: "#ffffff" }}
+            >
+              <MenuIcon />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            variant="faded"
+            aria-label="Dropdown menu with description"
+          >
+            <DropdownItem
+              key="edit"
+              showDivider
+              description="Allows clear the chat history"
+              startContent={<ClearIcon />}
+            >
+              Clear History
+            </DropdownItem>
+            <DropdownItem
+              key="delete"
+              className="text-danger"
+              color="danger"
+              description="Permanently delete chat"
+              startContent={<DeleteDocumentIcon className={iconClasses} />}
+            >
+              Delete Chat
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </div>
     </div>
   ) : null;

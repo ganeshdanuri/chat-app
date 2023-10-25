@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import StarIcon from "../../assets/SVGIcons/StarIcon";
 import "./index.css";
+import SearchIcon from "../../assets/SVGIcons/SearchIcon";
 
 const Sidebar = ({ userInfo }) => {
   const dispatch = useDispatch();
@@ -89,9 +90,7 @@ const Sidebar = ({ userInfo }) => {
       <Input
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Search or start a new chat"
-        startContent={
-          <FcSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-        }
+        startContent={<SearchIcon />}
       />
       <Spacer y={4} />
 
