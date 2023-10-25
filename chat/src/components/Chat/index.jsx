@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Avatar, Button, Input, Kbd, Spacer } from "@nextui-org/react";
+import { Button, Input, Kbd } from "@nextui-org/react";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,24 +10,29 @@ import {
 } from "../../store/counterSlice";
 import { io } from "socket.io-client";
 import { SOCKET_URL } from "../common/API/urls";
-import "./index.css";
 import { ChatIcon } from "../../assets/SVGIcons/ChatsIcon";
 import { IconWrapper } from "../../assets/SVGIcons/IconWrapper";
 import { UsersIcon } from "../../assets/SVGIcons/UsersIcon";
 import SendIcon from "../../assets/SVGIcons/SendIcon";
 import SearchIcon from "../../assets/SVGIcons/SearchIcon";
-import ClearChat from "../../assets/SVGIcons/ClearIcon";
+import "./index.css";
 
 const ChatHeader = () => {
-  return (
-    <div className="items-center">
-      <div style={{ width: "50%" }}>Hello</div>
-      <div style={{ width: "50%" }} className="flex">
-        <SearchIcon />
-        <ClearChat />
+  const selectedChat = useSelector((store) => store.chat.selectedChat);
+  return selectedChat ? (
+    <div className="chat-header">
+      <div>
+        <Button
+          isIconOnly
+          color="warning"
+          variant="faded"
+          aria-label="Take a photo"
+        >
+          <SearchIcon />
+        </Button>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 const ChatArea = ({ chatContainerRef, userInfo }) => {
@@ -80,7 +85,7 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
                   style={{
                     alignSelf:
                       ch?.sender === userInfo?.username ? "end" : "start",
-                    padding: "2px 10px",
+                    padding: "5px 10px",
                     textAlign: "start",
                     background:
                       ch?.sender !== userInfo?.username ? "#DCE6FF" : "#3D64FD",
@@ -150,15 +155,12 @@ const Footer = ({ socket, userInfo }) => {
   return (
     <>
       {selectedChat && (
-        <div
-          className="flex input-container"
-          style={{ height: "8%", padding: "10px" }}
-        >
+        <div className="flex input-container" style={{ height: "8%" }}>
           <Input
             onChange={(e) => {
               setUserInput(e.target.value);
             }}
-            size="lg"
+            size="md"
             value={userInput}
             placeholder="Type your message..."
             onKeyDown={handleKeyDown}
@@ -223,7 +225,7 @@ function Chat({ userInfo }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-      <ChatHeader />
+      <ChatHeader userInfo={userInfo} />
       <ChatArea
         chatContainerRef={chatContainerRef}
         scrollToBottom={scrollToBottom}

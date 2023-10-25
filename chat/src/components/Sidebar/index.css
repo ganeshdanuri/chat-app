@@ -25,7 +25,28 @@
     align-items: center;
   }
 
+  .selected-friend {
+    background-color: #3d64fd;
+    color: #f8f9fd;
+    box-shadow: rgba(240, 46, 170, 0.4) 5px 5px,
+      rgba(240, 46, 170, 0.3) 10px 10px;
+  }
+
+  .friend-avtar {
+    color: #f8f9fd;
+    background-color: #3d64fd;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .selected-avtar {
+    background-color: transparent;
+    color: #f8f9fd;
+    border: 1px solid #f8f9fd;
+  }
+
   .friends-item:hover {
-    background-color: #f1f4f5;
+    background-color: #3d64fd;
+    color: #f8f9fd;
   }
 }

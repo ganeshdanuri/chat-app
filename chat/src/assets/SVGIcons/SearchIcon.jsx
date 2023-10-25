@@ -18,7 +18,7 @@ const SearchIcon = () => {
         y2={15}
         style={{
           fill: "none",
-          stroke: "rgb(44, 169, 188)",
+          stroke: "#b2b1ff",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: 2,
@@ -31,7 +31,7 @@ const SearchIcon = () => {
         r={7}
         style={{
           fill: "none",
-          stroke: "rgb(0, 0, 0)",
+          stroke: "#6563ff",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: 2,

@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedChat } from "../../store/counterSlice";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import StarIcon from "../../assets/SVGIcons/StarIcon";
 import "./index.css";
 
 const Sidebar = ({ userInfo }) => {
@@ -43,7 +44,11 @@ const Sidebar = ({ userInfo }) => {
   }, [debouncedInputValue]);
 
   const triggerSearch = async (searchTerm) => {
-    if (!searchTerm) return;
+    if (!searchTerm) {
+      setSearchResults([]);
+      return;
+    }
+
     const response = await axios.post(allUrls.SEARCH_USERS_URL, {
       searchTerm,
     });
@@ -53,14 +58,14 @@ const Sidebar = ({ userInfo }) => {
   };
 
   const onChatClick = async (username) => {
-    if (!updatedFriends.includes(username)) {
+    if (!updatedFriends?.includes(username)) {
       const response = await axios.post(allUrls.ADD_FRIENDS, {
         from: userInfo.username,
         to: username,
       });
       dispatch(setSelectedChat({ name: username, chats: [] }));
       if (response.data) {
-        setUpdatedFriends((prev) => [...prev, username]);
+        setUpdatedFriends((prev) => [...(prev || []), username]);
       }
     } else {
       let userChat = chatData.find((chat) => chat.name === username);
@@ -90,80 +95,104 @@ const Sidebar = ({ userInfo }) => {
       />
       <Spacer y={4} />
 
-      {friends?.length && (
-        <div className="friends-container">
-          {friends.map((friend) => {
-            return (
-              <div
-                className="cursor-pointer friends-item"
-                onClick={() => onChatClick(friend)}
-                key={uuidv4()}
-                style={{
-                  backgroundColor:
-                    selectedUsername === friend ? "#f1f4f6" : "transparent",
-                }}
-              >
-                <div>
-                  <Avatar
-                    isBordered
-                    color="primary"
-                    name={friend}
-                    radius="sm"
-                    size="sm"
-                  />
+      <div style={{ height: "86%", overflowY: "auto", overflowX: "hidden" }}>
+        {friends?.length > 0 && (
+          <div className="friends-container">
+            {friends.map((friend) => {
+              return (
+                <div
+                  onClick={() => onChatClick(friend)}
+                  key={uuidv4()}
+                  className={
+                    selectedUsername === friend
+                      ? "selected-friend cursor-pointer friends-item"
+                      : "cursor-pointer friends-item"
+                  }
+                >
+                  <div>
+                    <Avatar
+                      name={friend[0].toUpperCase()}
+                      size="sm"
+                      radius="sm"
+                      className={
+                        selectedUsername === friend
+                          ? "friend-avtar selected-avtar"
+                          : "friend-avtar"
+                      }
+                    />
+                  </div>
+                  <Spacer x={4} />
+                  <span>{friend}</span>
+                  <Spacer x={4} />
+                  <StarIcon selected={selectedUsername === friend} />
                 </div>
-                <Spacer x={4} />
-                <span>{friend}</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-      <div className="w-full flex flex-col flex-start">
-        {seachResults.map(({ username }) => {
-          return (
-            <div onClick={() => onChatClick(username)} key={uuidv4()}>
-              <User
-                className="cursor-pointer"
-                name={username}
-                description="Product Designer"
-                avatarProps={{
-                  src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-                  isBordered: true,
-                }}
-              />
-              <Spacer y={4} />
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        )}
+        {seachResults?.length > 0 ? (
+          <div className="friends-container">
+            {seachResults
+              .filter(({ username }) => username !== userInfo.username)
+              .map(({ username }) => {
+                return (
+                  <div
+                    onClick={() => onChatClick(username)}
+                    key={uuidv4()}
+                    className={
+                      selectedUsername === username
+                        ? "selected-friend cursor-pointer friends-item"
+                        : "cursor-pointer friends-item"
+                    }
+                  >
+                    <div>
+                      <Avatar
+                        name={username[0].toUpperCase()}
+                        size="sm"
+                        radius="sm"
+                        className={
+                          selectedUsername === username
+                            ? "friend-avtar selected-avtar"
+                            : "friend-avtar"
+                        }
+                      />
+                    </div>
+                    <Spacer x={4} />
+                    <span>{username}</span>
+                    <Spacer x={4} />
+                    <StarIcon selected={selectedUsername === username} />
+                  </div>
+                );
+              })}
+          </div>
+        ) : (
+          inputValue && <div> No Results found !! </div>
+        )}
       </div>
-
       <hr />
-      <Dropdown placement="bottom-start">
-        <DropdownTrigger>
-          <User
-            as="button"
-            avatarProps={{
-              isBordered: true,
-              src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+      <div className="items-center" style={{ padding: "10px" }}>
+        <Dropdown placement="bottom-start">
+          <DropdownTrigger>
+            <User
+              as="button"
+              className="transition-transform"
+              description={`@${userInfo?.username}`}
+              name={userInfo?.username}
+            />
+          </DropdownTrigger>
+          <DropdownMenu
+            aria-label="User Actions"
+            variant="flat"
+            onAction={(key) => {
+              if (key === "logout") navigate("/login");
             }}
-            className="transition-transform"
-            description={`@${userInfo?.username}`}
-            name={userInfo?.username}
-          />
-        </DropdownTrigger>
-        <DropdownMenu
-          aria-label="User Actions"
-          variant="flat"
-          onAction={(key) => {
-            if (key === "logout") navigate("/login");
-          }}
-        >
-          <DropdownItem key="logout" color="danger">
-            Log Out
-          </DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
+          >
+            <DropdownItem key="logout" color="danger">
+              Log Out
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </div>
     </div>
   );
 };
