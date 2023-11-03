@@ -16,7 +16,7 @@
   margin: 10px;
 
   .friends-item {
-    margin: 3px;
+    margin: 4px;
     padding: 10px;
     width: 98%;
     border-radius: 10px;
@@ -28,7 +28,6 @@
   .selected-friend {
     background-color: #6563ff;
     color: #f8f9fd;
-    box-shadow: #b2b1ff 3px 3px;
   }
 
   .friend-avtar {
@@ -47,5 +46,11 @@
   .friends-item:hover {
     background-color: #6563ff;
     color: #f8f9fd;
+  }
+
+  .friends-item:hover .friend-avtar {
+    background-color: transparent;
+    color: #f8f9fd;
+    border: 1px solid #f8f9fd;
   }
 }

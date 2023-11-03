@@ -146,13 +146,6 @@ const ChatArea = ({ chatContainerRef, userInfo }) => {
                   alignItems: "start",
                 }}
               >
-                {/* <Avatar
-                  size="sm"
-                  isDisabled
-                  name="Joe"
-                  isBordered
-                  style={{ order: ch?.sender === userInfo?.username && 1 }}
-                /> */}
                 <span
                   key={uuidv4()}
                   style={{
